@@ -31,15 +31,38 @@ async function run() {
 
         const menuCollection = client.db("tastyTroveDb").collection("menu");
         const reviewsCollection = client.db("tastyTroveDb").collection("reviews");
+        const cartCollection = client.db("tastyTroveDb").collection("carts");
 
-        app.get('/menu', async(req, res)=>{
+        app.get('/menu', async (req, res) => {
             const result = await menuCollection.find().toArray();
             res.send(result)
         })
-        app.get('/reviews', async(req, res)=>{
+        app.get('/reviews', async (req, res) => {
             const result = await reviewsCollection.find().toArray();
             res.send(result)
         })
+
+        //cart collection
+        app.post('/carts', async (req, res) => {
+            const item = req.body;
+            console.log(item);
+            const result = await cartCollection.insertOne(item);
+            res.send(result);
+        })
+
+        app.get('/carts', async (req, res) => {
+            const email = req.query.email;
+            console.log(email)
+
+            if (!email) {
+
+                res.send([]);
+            }
+
+            const query = { email: email };
+            const result = await cartCollection.find(query).toArray();
+            res.send(result)
+        });
 
 
 
@@ -64,3 +87,16 @@ app.get('/', (req, res) => {
 app.listen(port, () => {
     console.log(`tasty tasty foods on port ${port}`)
 })
+
+/* -------------------
+    Naming convention
+----------------------
+users : userCollection
+
+app.get('/users')
+app.get('/users/:id')
+app.post('/users')
+app.patch('/users/:id')
+app.put('/users/:id')
+app.delete('/users/:id')
+*/
